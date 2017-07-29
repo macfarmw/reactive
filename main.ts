@@ -1,43 +1,44 @@
 import { Observable } from "rxjs";
-import { loadWithFetch } from "./loader";
+import { load } from "./loader";
 
-let timer = Observable.interval(3000);
+let output = document.getElementById("output");
+let button = document.getElementById("button");
 
-timer.subscribe(
-    value => console.log(`value: ${value}`)
-)
+let click = Observable.fromEvent(button, "click");
 
+function renderMovies(movies) {
+    movies.forEach(m => {
+        let div = document.createElement("div");
+        div.innerText = m.title;
+        output.appendChild(div);
+    });
+}
 
-// let output = document.getElementById("output");
-// let button = document.getElementById("button");
+let subscription = load("movies.json")
+    .subscribe(
+    // next
+    renderMovies,
 
-// let click = Observable.fromEvent(button, "click");
+    // error
+    error => console.log(`error: ${error}`),
 
-// function renderMovies(movies) {
-//     console.log('Calling renderMovies');
-//     movies.forEach(m => {
-//         let div = document.createElement("div");
-//         div.innerText = m.title;
-//         output.appendChild(div);
-//     });
-// }
+    // complete
+    () => console.log("complete")
+    );
 
-// loadWithFetch("moviess.json")
-//     .subscribe(renderMovies, 
-//     e => console.log(`My error: ${e}`),
-//     () => console.log("My complete")
-// )
+console.log(subscription);
+subscription.unsubscribe();
 
-// click.flatMap(e => loadWithFetch("moviess.json"))
-//     .subscribe(
-//     // next
-//     renderMovies,
+click.flatMap(e => load("movies.json"))
+    .subscribe(
+    // next
+    renderMovies,
 
-//     // error
-//     error => console.log(`error: ${error}`),
+    // error
+    error => console.log(`error: ${error}`),
 
-//     // complete
-//     () => console.log("complete")
-// );
+    // complete
+    () => console.log("complete")
+    );
 
 
